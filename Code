@@ -1,0 +1,72 @@
+const int leftSwitch = 3;
+const int rightSwitch = 2;
+
+const int ledLeft = 10;
+const int ledRight = 8;
+
+int rounds = 5;
+
+void setup() {
+  pinMode(leftSwitch, INPUT);
+  pinMode(rightSwitch, INPUT);
+  pinMode(ledLeft, OUTPUT);
+  pinMode(ledRight, OUTPUT);
+
+  Serial.begin(9600);
+  randomSeed(analogRead(0));
+}
+
+void loop() {
+
+  for (int i = 1; i <= rounds; i++) {
+
+    Serial.print("Round ");
+    Serial.println(i);
+    Serial.println("Wait for it...");
+
+    delay(random(2000, 4000));
+
+    int choice = random(0, 2);
+    unsigned long startTime = millis();
+
+    if (choice == 0) {
+      digitalWrite(ledLeft, HIGH);
+      Serial.println("LEFT LED!");
+    } else {
+      digitalWrite(ledRight, HIGH);
+      Serial.println("RIGHT LED!");
+    }
+
+    while (true) {
+
+      if (digitalRead(leftSwitch) == HIGH) {
+        checkAnswer(0, choice, startTime);
+        break;
+      }
+
+      if (digitalRead(rightSwitch) == HIGH) {
+        checkAnswer(1, choice, startTime);
+        break;
+      }
+    }
+
+    digitalWrite(ledLeft, LOW);
+    digitalWrite(ledRight, LOW);
+
+    delay(1500);
+  }
+
+  Serial.println("Game Over");
+  while(true);
+}
+
+void checkAnswer(int playerChoice, int correctChoice, unsigned long startTime) {
+
+  if (playerChoice == correctChoice) {
+    Serial.print("Correct! Reaction: ");
+    Serial.print(millis() - startTime);
+    Serial.println(" ms");
+  } else {
+    Serial.println("Wrong switch!");
+  }
+}
